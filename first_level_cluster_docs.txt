@@ -1,0 +1,35 @@
+//======================first_level_cluster=================================//
+
+
+1.Raw data trails are refined according to the time stamp and stored in list datalines[].
+
+2.these datalines[] are further trimmed by containing only zero speed points.
+    1.zero data points are the points that are duplicated consectutively in the datalines[]
+    2.they are stored in zero_speed_data[] with each points respective count(indicating the stoppage time).
+    3.header for zero_speed_data:
+            header= "latitude, longitude, time-stamp,count,trail_number"
+            
+3.Now these zero_speed_data[] is used again to generate local groups
+    1.we give the local group no 1 lo the first zero_speed_data[0] point.
+    2.we check the distance between the zero_speed_data[0] point and other points.
+    3.all the other points which are within the distance(DISTANCE_THRESHOLD) are included in the local group.
+    4.the first point where distance > DISTANCE_THRESHOLD we repeat the process and keep incrementing the local_group no.
+    5.details are stored in local_group_data[].
+    6.header for local_group_data:
+            header= "latitude, longitude, time-stamp, count, trail_number, local_group_number"
+
+4.then we form the local_group_leaders from the local_group_data[]
+    1.we use the ratio of wait time and spatial spread(???) to find the local_group_leader.
+    2.local_group_leader[] only includes the leader of the local_groups.
+    3.the length of the local_group_leader[] is same as the total no of groups.
+
+5.local_group[] includes the local_group_leader[] list of all the trails.
+
+
+//================second_level_cluster=============================================//
+
+
+
+
+
+

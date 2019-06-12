@@ -26,42 +26,175 @@ def insert_time(name):
 	df['timelevel']=time_k
 	df.to_csv(name,index=False)
 
-def dec_zone(name):
-	Lat_market=23.5631833333 
-	Long_market=87.28356
-	Lat_nc=23.5440616667 
-	Long_nc=87.2887366667
-	Lat_high=23.4946766667 
-	Long_high=87.3168283333
-	l_market=get_spherical_distance(Lat_market,Lat_nc,Long_market,Long_nc)
-	l_nc=get_spherical_distance(Lat_nc,Lat_high,Long_nc,Long_high)
+def dec_zone(name,GROUND_TRUTH):
+	#print(GROUND_TRUTH)
 	zone=[]
 	zone_class=[]
-
+	l_market=[]
+	l_nc=[]
+	l_highway=[]
 	df=pd.read_csv(name)
-	l=len(df)
-	i=0
-	while i<l:
-		Lat_a=df.iloc[i]['latitude']
-		Long_a=df.iloc[i][' longitude']
-		#if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)+get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)==l_market:
-		if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)<l_market:
-			zone.append('Market')
-			zone_class.append('1')
+	if '54feet' in GROUND_TRUTH:
+		Lat_market=23.5631833333 
+		Long_market=87.28356
+		Lat_nc=23.5440616667 
+		Long_nc=87.2887366667
+		Lat_high=23.4946766667 
+		Long_high=87.3168283333
+		l_market.append(get_spherical_distance(Lat_market,Lat_nc,Long_market,Long_nc))
+		l_nc.append(get_spherical_distance(Lat_nc,Lat_high,Long_nc,Long_high))
+		
+
+		
+		l=len(df)
+		#print(l)
+		i=0
+		while i<l:
+			#print("a ",i)
+			Lat_a=df.iloc[i]['latitude']
+			Long_a=df.iloc[i][' longitude']
+			#if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)+get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)==l_market:
+			if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)<l_market[0]:
+				zone.append('Market')
+				zone_class.append('1')
 		#elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)+get_spherical_distance(Lat_a,Lat_high,Long_a,Long_high)==l_nc:
-		elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)<l_nc:
-			zone.append('Normal city')
-			zone_class.append('2')
-		else:
-			zone.append('Highway')
-			zone_class.append('3')
-		i+=1
+			elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)<l_nc[0]:
+				zone.append('Normal city')
+				zone_class.append('2')
+			else:
+				zone.append('Highway')
+				zone_class.append('3')
+			#print(len(zone))
+			#print(zone)
+			i+=1
+	if 'azone' in GROUND_TRUTH:
+		Lat_market=[23.5481833333]
+		Long_market=[87.3024633333]
+		Lat_nc=[23.564295,23.5074966667]
+		Long_nc=[87.28288,87.3101183333]
+		Lat_high=[23.5702466667,23.5355883333]
+		Long_high=[87.3025383333,87.2982133333]
+		Lat=23.494395
+		Long=87.317125
+		
+		l_market.append(get_spherical_distance(Lat_market[0],Lat_high[1],Long_market[0],Long_high[1]))
+		#l_market.append(get_spherical_distance(Lat_market[1],Lat_high[0],Long_market[1],Long_high[0]))
+		l_nc.append(get_spherical_distance(Lat_nc[0],Lat_high[0],Long_nc[0],Long_high[0]))
+		l_nc.append(get_spherical_distance(Lat_nc[1],Lat,Long_nc[1],Long))
+		l_highway.append(get_spherical_distance(Lat_high[0],Lat_market[0],Long_high[0],Long_market[0]))
+		l_highway.append(get_spherical_distance(Lat_high[1],Lat_nc[1],Long_high[1],Long_nc[1]))
+		
+		#df=pd.read_csv(name)
+		l=len(df)
+		#print(l)
+		i=0
+		while i<l:
+			#print("a ",i)
+			Lat_a=df.iloc[i]['latitude']
+			Long_a=df.iloc[i][' longitude']
+			#if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)+get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)==l_market:
+			if get_spherical_distance(Lat_a,Lat_market[0],Long_a,Long_market[0])<l_market[0]:
+				zone.append('Market')
+				zone_class.append('1')
+		#elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)+get_spherical_distance(Lat_a,Lat_high,Long_a,Long_high)==l_nc:
+			elif get_spherical_distance(Lat_a,Lat_nc[0],Long_a,Long_nc[0])<l_nc[0] or get_spherical_distance(Lat_a,Lat_nc[1],Long_a,Long_nc[1])<l_nc[1]:
+				zone.append('Normal city')
+				zone_class.append('2')
+			else:
+				zone.append('Highway')
+				zone_class.append('3')
+			#rint(len(zone))
+			#print(zone)
+			i+=1
+	if 'ukhra' in GROUND_TRUTH:
+		Lat_market=[23.56451,23.5887733333]
+		Long_market=[87.2823233333,87.2085283333]
+		Lat_nc=[23.6109329268,23.6407509281]
+		Long_nc=[87.217555195,87.2265615539]
+		Lat_high=[23.5505989912,23.6276064719]
+		Long_high=[87.2686366159,87.2219748885]
+		Lat=23.6523530924
+		Long=87.2431245943
+		
+		l_market.append(get_spherical_distance(Lat_market[0],Lat_high[0],Long_market[0],Long_high[0]))
+		l_market.append(get_spherical_distance(Lat_market[1],Lat_high[0],Long_market[1],Long_high[0]))
+		l_nc.append(get_spherical_distance(Lat_nc[0],Lat_high[1],Long_nc[0],Long_high[1]))
+		l_nc.append(get_spherical_distance(Lat_nc[1],Lat,Long_nc[1],Long))
+		l_highway.append(get_spherical_distance(Lat_high[0],Lat_market[0],Long_high[0],Long_market[0]))
+		l_highway.append(get_spherical_distance(Lat_high[1],Lat_nc[0],Long_high[1],Long_nc[0]))
+		
+		#df=pd.read_csv(name)
+		l=len(df)
+		#print(l)
+		i=0
+		while i<l:
+			#print("a ",i)
+			Lat_a=df.iloc[i]['latitude']
+			Long_a=df.iloc[i][' longitude']
+			#if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)+get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)==l_market:
+			if get_spherical_distance(Lat_a,Lat_market[0],Long_a,Long_market[0])<l_market[0] or get_spherical_distance(Lat_a,Lat_market[1],Long_a,Long_market[1])<l_market[1]:
+				zone.append('Market')
+				zone_class.append('1')
+		#elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)+get_spherical_distance(Lat_a,Lat_high,Long_a,Long_high)==l_nc:
+			elif get_spherical_distance(Lat_a,Lat_nc[0],Long_a,Long_nc[0])<l_nc[0] or get_spherical_distance(Lat_a,Lat_nc[1],Long_a,Long_nc[1])<l_nc[1]:
+				zone.append('Normal city')
+				zone_class.append('2')
+			else:
+				zone.append('Highway')
+				zone_class.append('3')
+			#print(len(zone))
+			#print(zone)
+			i+=1
+	if '8B' in GROUND_TRUTH:
+		Lat_market=[23.56451333,23.52723683,23.5158748,23.49778284]
+		Long_market=[87.28308833,87.3419682,87.3548276,87.33484252]
+		Lat_nc=[23.56451333,23.53399268,23.52339667]
+		Long_nc=[87.28308833,87.34188019,87.33937167]
+		Lat_high=[23.54631667,23.50425167]
+		Long_high=[87.31860333,87.35286333]
+		Lat=23.50697833
+		Long=87.31082333
+		
+		l_market.append(get_spherical_distance(Lat_market[0],Lat_high[0],Long_market[0],Long_high[0]))
+		l_market.append(get_spherical_distance(Lat_market[1],Lat_nc[2],Long_market[1],Long_nc[2]))
+		l_market.append(get_spherical_distance(Lat_market[2],Lat_high[1],Long_market[2],Long_high[1]))
+		l_market.append(get_spherical_distance(Lat_market[3],Lat,Long_market[3],Long))
+		l_nc.append(get_spherical_distance(Lat_nc[0],Lat_market[0],Long_nc[0],Long_market[0]))
+		l_nc.append(get_spherical_distance(Lat_nc[1],Lat_market[2],Long_nc[1],Long_market[2]))
+		l_nc.append(get_spherical_distance(Lat_nc[2],Lat_market[2],Long_nc[2],Long_market[2]))
+		l_highway.append(get_spherical_distance(Lat_high[0],Lat_nc[1],Long_high[0],Long_nc[1]))
+		l_highway.append(get_spherical_distance(Lat_high[1],Lat_market[3],Long_high[1],Long_market[3]))
+		
+		#df=pd.read_csv(name)
+		l=len(df)
+		#print(l)
+		i=0
+		while i<l:
+			#print("a ",i)
+			Lat_a=df.iloc[i]['latitude']
+			Long_a=df.iloc[i][' longitude']
+			#if get_spherical_distance(Lat_a,Lat_market,Long_a,Long_market)+get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)==l_market:
+			if get_spherical_distance(Lat_a,Lat_market[0],Long_a,Long_market[0])<l_market[0] or get_spherical_distance(Lat_a,Lat_market[1],Long_a,Long_market[1])<l_market[1] or get_spherical_distance(Lat_a,Lat_market[2],Long_a,Long_market[2])<l_market[2] or get_spherical_distance(Lat_a,Lat_market[3],Long_a,Long_market[3])<l_market[3]:
+				zone.append('Market')
+				zone_class.append('1')
+		#elif get_spherical_distance(Lat_a,Lat_nc,Long_a,Long_nc)+get_spherical_distance(Lat_a,Lat_high,Long_a,Long_high)==l_nc:
+			elif get_spherical_distance(Lat_a,Lat_nc[0],Long_a,Long_nc[0])<l_nc[0] or get_spherical_distance(Lat_a,Lat_nc[1],Long_a,Long_nc[1])<l_nc[1] or get_spherical_distance(Lat_a,Lat_nc[2],Long_a,Long_nc[2])<l_nc[2]:
+				zone.append('Normal city')
+				zone_class.append('2')
+			else:
+				zone.append('Highway')
+				zone_class.append('3')
+			#print(len(zone))
+			#print(zone)
+			i+=1
 	#WSSprint(zone)
+	#print(zone)
+	#print(len(zone))
 	df['Zone']=zone
 	df['Zone_class']=zone_class
 	df.to_csv(name,index=False)
 
-def cal_dist(name):
+def cal_dist(name,GROUND_TRUTH):
 	distance=[150.453623567463]
 	df=pd.read_csv(name)
 	l=len(df)
@@ -79,7 +212,8 @@ def cal_dist(name):
 	df['cons_dist']=distance
 	df.to_csv(name,index=False)
 	insert_time(name)
-	dec_zone(name)
+	#print(GROUND_TRUTH)
+	dec_zone(name,GROUND_TRUTH)
 
 def main():
  	#ground_truth_file = "groundtruth/54feet.txt"
@@ -98,7 +232,7 @@ def main():
 
 	 	bus_stop_file= k+i_s+p
 	 	#print(i)
- 		cal_dist(bus_stop_file)
+ 		cal_dist(bus_stop_file,GROUND_TRUTH)
  		#insert_time(bus_stop_file)
  		i+=1
 main()

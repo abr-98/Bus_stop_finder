@@ -31,8 +31,8 @@ def compare_ground_truth(ground_truth_file, bus_stop_file,OUTPUT_FOLDER,threshol
 	gt = read_file(ground_truth_file)
 	bus_stops = read_file(bus_stop_file)
 
-	print "GT: ",len(gt)
-	print "all bus_stops: ",len(bus_stops)
+	print("GT: ",len(gt))
+	print("all bus_stops: ",len(bus_stops))
 	print gt[0]
 	print bus_stops[0]
 

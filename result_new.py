@@ -12,76 +12,41 @@ from sklearn.metrics import accuracy_score
 from keras.layers.normalization import BatchNormalization
 
 
-df1=pd.read_csv('train_bus_1.csv')
-df2=pd.read_csv('test_bus_1.csv')
+df=pd.read_csv('feature.csv')
 
 model=Sequential()
 #print(len(df))
 
 #TRain
-X_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class']].values
-X1_train=pd.DataFrame(X_1)
+X=df[['zone','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_density','rsi','Weekend/day']].values
+X_d=pd.DataFrame(X)
 
 
-y_1=df1[['bus_stop','latitude','longitude']].values
-Y1_train_k=pd.DataFrame(y_1)
-#y_d_2=pd.get_dummies(y_d)
-Y_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class']].values
-X1_test=pd.DataFrame(Y_1)
+y=df[['bus_stop','latitude','longitude']].values
+y_d=pd.DataFrame(y)
+y_d_2=pd.get_dummies(y_d)
 
-
-y_2=df1[['bus_stop','latitude','longitude']].values
-Y1_test_k=pd.DataFrame(y_2)
-
-#X_train, X_test, y_train_k, y_test_k = train_test_split(X_d,y_d,test_size=0.2,random_state=42)
+X_train, X_test, y_train_k, y_test_k = train_test_split(X_d,y_d,test_size=0.2,random_state=42)
 #print(X_train)
-y_train1=Y1_train_k[0].copy()
+y_train1=y_train_k[0].copy()
 y_train=pd.DataFrame(y_train1)
-y_test1=Y1_test_k[0].copy()
+y_test1=y_test_k[0].copy()
 y_test=pd.DataFrame(y_test1)
 
 #l=len(y_test_k)
 #i=0
-bs=Y1_test_k[0].copy()
-bs_l=bs.tolist()
-lat=Y1_test_k[1].copy()
+lat=y_test_k[1].copy()
 lat_l=lat.tolist()
 
-long=Y1_test_k[2].copy()
+long=y_test_k[2].copy()
 long_l=long.tolist()
+    
 
-z=X1_test[0].copy()
-z_l=z.tolist()
-
-t=X1_test[1].copy()
-t_l=t.tolist()
-
-n=X1_test[2].copy()
-n_l=n.tolist()
-
-tw=X1_test[3].copy()
-tw_l=tw.tolist()
-
-w=X1_test[4].copy()
-w_l=w.tolist()
-
-h=X1_test[5].copy()
-h_l=h.tolist()
-
-p=X1_test[6].copy()
-p_l=p.tolist()
-
-r=X1_test[7].copy()
-r_l=r.tolist()
-
-wc=X1_test[8].copy()
-wc_l=wc.tolist()
-
-X_train_2=pd.get_dummies(X1_train,columns=[0,1,6,8])
+X_train_2=pd.get_dummies(X_train,columns=[0,1,6,8])
 #X_train_2[1] = X_train_2[1].astype(float)
 
 #y_train_2=pd.get_dummies(y_train)
-X_test_2=pd.get_dummies(X1_test,columns=[0,1,6,8])
+X_test_2=pd.get_dummies(X_test,columns=[0,1,6,8])
 #X_test_2[1] = X_test_2[1].astype(float)
 
 #y_test_2=pd.get_dummies(y_test)
@@ -163,6 +128,7 @@ text.close()
 #---------------------#
 #new_y_d=pd.DataFrame(new_y)
 #----------------------#
+prediction2=[]
 prediction=[]
 for x in predictions:
     #print(x)
@@ -178,30 +144,30 @@ for i in actual:
     given.append(i[0])
 #print(given)
 
-text_fp=open('False_Positive_test1.csv','w')
-text_fp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_fp=open('False_Positive_test2.csv','w')
+text_fp.write('latitude,longitude,prediction_per\n')
 
-text_fn=open('False_Negative_test1.csv','w')
-text_fn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_fn=open('False_Negative_test2.csv','w')
+text_fn.write('latitude,longitude,prediction_per\n')
 
-text_tp=open('True_Positive_test1.csv','w')
-text_tp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_tp=open('True_Positive_test2.csv','w')
+text_tp.write('latitude,longitude,prediction_per\n')
 
-text_tn=open('True_Negative_test1.csv','w')
-text_tn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_tn=open('True_Negative_test2.csv','w')
+text_tn.write('latitude,longitude,prediction_per\n')
 
 l=len(y_test)
 j=0
 
 while j<l:
     if given[j]==1 and prediction[j]==0:
-        text_fn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_fn.write(str(lat_l[j])+","+str(long_l[j])+","+str(predictions[j]*100)+"\n")
     if given[j]==0 and prediction[j]==1:
-        text_fp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_fp.write(str(lat_l[j])+","+str(long_l[j])+","+str(predictions[j]*100)+"\n")
     if given[j]==1 and prediction[j]==1:
-        text_tp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_tp.write(str(lat_l[j])+","+str(long_l[j])+","+str(predictions[j]*100)+"\n")
     if given[j]==0 and prediction[j]==0:
-        text_tn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_tn.write(str(lat_l[j])+","+str(long_l[j])+","+str(predictions[j]*100)+"\n")
     j+=1
 
 text_fn.close()

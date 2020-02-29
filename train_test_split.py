@@ -5,7 +5,7 @@ df=pd.read_csv('feature.csv')
 
 
 #TRain
-X=df[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class']].values
+X=df[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','Signal']].values
 X_d=pd.DataFrame(X)
 #X_d_2=pd.get_dummies(X_d)
 
@@ -19,8 +19,8 @@ X_test = pd.concat([X_test, y_test], axis=1,ignore_index=True)
 
 #X_train.join(y_train)
 #X_test.join(y_test)
-X_train.columns = ['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','bus_stop','latitude','longitude']
+X_train.columns = ['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','bus_stop','latitude','longitude','Signal']
 
-X_test.columns = ['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','bus_stop','latitude','longitude']
+X_test.columns = ['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','bus_stop','latitude','longitude','Signal']
 X_train.to_csv('train_bus_1.csv')
 X_test.to_csv('test_bus_1.csv')

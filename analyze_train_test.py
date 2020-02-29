@@ -19,14 +19,14 @@ model=Sequential()
 #print(len(df))
 
 #TRain
-X_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class']].values
+X_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','Signal']].values
 X1_train=pd.DataFrame(X_1)
 
 
 y_1=df1[['bus_stop','latitude','longitude']].values
 Y1_train_k=pd.DataFrame(y_1)
 #y_d_2=pd.get_dummies(y_d)
-Y_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class']].values
+Y_1=df1[['zone_class','time_level','next_stop_distance','total_waiting_time','wifi_count','honks','Population_class','rsi','week_class','Signal']].values
 X1_test=pd.DataFrame(Y_1)
 
 
@@ -77,6 +77,8 @@ r_l=r.tolist()
 wc=X1_test[8].copy()
 wc_l=wc.tolist()
 
+sg=X1_test[9].copy()
+sg_l=sg.tolist()
 X_train_2=pd.get_dummies(X1_train,columns=[0,1,6,8])
 #X_train_2[1] = X_train_2[1].astype(float)
 
@@ -91,41 +93,16 @@ n_cols=X_train_2.shape[1]
 n_cols=X_train_2.shape[1]
 print(n_cols)
 print(X_train_2)
-model.add(Dense(200, activation='relu', input_shape=(n_cols,)))
+model.add(Dense(20, activation='relu', input_shape=(n_cols,)))
+model.add(BatchNormalization())
+#model.add(Dropout(0.2))
+model.add(Dense(40, activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.2))
-model.add(Dense(200, activation='relu'))
+model.add(Dense(80, activation='relu'))
 model.add(BatchNormalization())
-model.add(Dropout(0.3))
-model.add(Dense(250, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.3))
-model.add(Dense(300, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.4))
-model.add(Dense(350, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.4))
-model.add(Dense(450, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-model.add(Dense(500, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-model.add(Dense(550, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
+model.add(Dropout(0.2))
 
-model.add(Dense(650, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-
-'''model.add(Dense(800, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))'''
-model.add(Dense(700, activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
 early_stopping_monitor = EarlyStopping(patience=3)
@@ -135,7 +112,7 @@ from keras.optimizers import SGD
 #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(optimizer='RMSprop', loss='binary_crossentropy', metrics=['accuracy'])
 
-model.fit(X_train_2, y_train, epochs=400, callbacks=[early_stopping_monitor],batch_size=100)
+model.fit(X_train_2, y_train, epochs=10000, callbacks=[early_stopping_monitor],batch_size=100)
 
 
 #3
@@ -179,29 +156,29 @@ for i in actual:
 #print(given)
 
 text_fp=open('False_Positive_test1.csv','w')
-text_fp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_fp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,Signal,prediction_per\n')
 
 text_fn=open('False_Negative_test1.csv','w')
-text_fn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_fn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,Signal,prediction_per\n')
 
 text_tp=open('True_Positive_test1.csv','w')
-text_tp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_tp.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,Signal,prediction_per\n')
 
 text_tn=open('True_Negative_test1.csv','w')
-text_tn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,prediction_per\n')
+text_tn.write('latitude,longitude,zone_class,time_level,next_stop_distance,total_waiting_time,wifi_count,honks,Population_class,rsi,week_class,bus_stop,Signal,prediction_per\n')
 
 l=len(y_test)
 j=0
 
 while j<l:
     if given[j]==1 and prediction[j]==0:
-        text_fn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_fn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str(sg_l[j])+","+str((predictions[j])[0]*100)+"\n")
     if given[j]==0 and prediction[j]==1:
-        text_fp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_fp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str(sg_l[j])+","+str((predictions[j])[0]*100)+"\n")
     if given[j]==1 and prediction[j]==1:
-        text_tp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_tp.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str(sg_l[j])+","+str((predictions[j])[0]*100)+"\n")
     if given[j]==0 and prediction[j]==0:
-        text_tn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str((predictions[j])[0]*100)+"\n")
+        text_tn.write(str(lat_l[j])+","+str(long_l[j])+","+str(z_l[j])+","+str(t_l[j])+","+str(n_l[j])+","+str(tw_l[j])+","+str(w_l[j])+","+str(h_l[j])+","+str(p_l[j])+","+str(r_l[j])+","+str(wc_l[j])+","+str(bs_l[j])+","+str(sg_l[j])+","+str((predictions[j])[0]*100)+"\n")
     j+=1
 
 text_fn.close()
